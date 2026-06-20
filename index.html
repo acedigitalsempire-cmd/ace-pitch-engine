@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  App: Ace Pitch Engine
+  Brand: Ace Digitals Global
+  Aesthetic: Dark industrial / luxury agency
+  Fonts: Syne + Inter
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B2A4A">
+<title>Ace Pitch Engine | Ace Digitals Global</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Variables ─────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:          #0D1623;
+    --surface:     #1B2A4A;
+    --surface-2:   #223358;
+    --surface-3:   #162038;
+    --border:      rgba(255,255,255,0.07);
+    --border-gold: rgba(201,168,76,0.35);
+    --text:        #F0F4FF;
+    --text-muted:  #8A9BBF;
+    --text-dim:    #4A5E82;
+    --gold:        #C9A84C;
+    --gold-light:  #E8C96C;
+    --red:         #E53E3E;
+    --red-soft:    rgba(229,62,62,0.12);
+    --green:       #38A169;
+    --green-soft:  rgba(56,161,105,0.12);
+    --orange:      #DD6B20;
+    --accent:      #3B6FE8;
+    --radius:      6px;
+    --radius-lg:   10px;
+    --shadow:      0 4px 24px rgba(0,0,0,0.4);
+    --shadow-gold: 0 0 0 1px var(--border-gold);
+    --transition:  0.2s ease;
+    --font-head:   'Syne', sans-serif;
+    --font-body:   'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Scrollbar ─────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 4px; }
+
+  /* ── Top Bar ───────────────────────────────────────────────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(12px);
+  }
+
+  .topbar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-head);
+  }
+
+  .brand-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  .brand-name {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .brand-tag {
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid var(--border-gold);
+    border-radius: 20px;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  .status-label {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  .app { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  /* ── Hero ──────────────────────────────────────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 32px 0 28px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .hero-title {
+    font-family: var(--font-head);
+    font-size: clamp(24px, 5vw, 38px);
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .hero-title span {
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 460px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ── Search Card ───────────────────────────────────────────────────────── */
+  .search-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .search-card-title {
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .search-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  @media (max-width: 480px) {
+    .search-grid { grid-template-columns: 1fr; }
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .field-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .field-input::placeholder { color: var(--text-dim); }
+
+  .field-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+
+  /* Datalist suggestions */
+  datalist option { background: var(--surface); color: var(--text); }
+
+  .search-examples {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .search-example-label { color: var(--text-muted); margin-right: 2px; }
+
+  .example-tag {
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .example-tag:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .btn-search {
+    width: 100%;
+    background: var(--gold);
+    color: #0D1623;
+    border: none;
+    border-radius: var(--radius);
+    padding: 13px 24px;
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-search:hover:not(:disabled) {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+  }
+
+  .btn-search:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── Progress Bar ──────────────────────────────────────────────────────── */
+  .progress-wrap {
+    display: none;
+    margin-bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+
+  .progress-wrap.visible { display: block; }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0%   { filter: brightness(1); }
+    50%  { filter: brightness(1.3); }
+    100% { filter: brightness(1); }
+  }
+
+  .progress-step {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+
+  /* ── Stats Bar ─────────────────────────────────────────────────────────── */
+  .stats-bar {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stats-bar.visible { display: grid; }
+
+  @media (max-width: 480px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-value.gold { color: var(--gold); }
+  .stat-value.red  { color: var(--red); }
+  .stat-value.green { color: var(--green); }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Results Header ────────────────────────────────────────────────────── */
+  .results-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .results-header.visible { display: flex; }
+
+  .results-title {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .results-title span { color: var(--gold); }
+
+  .sort-wrap {
+    display: flex;
+    gap: 6px;
+  }
+
+  .sort-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .sort-btn.active, .sort-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  /* ── Lead Cards ────────────────────────────────────────────────────────── */
+  .leads-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .lead-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    animation: slideIn 0.3s ease both;
+  }
+
+  .lead-card:hover {
+    border-color: rgba(201,168,76,0.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .lead-card.sent {
+    border-color: rgba(56,161,105,0.3);
+  }
+
+  .lead-card.expanded .lead-body { display: block; }
+  .lead-card .lead-body { display: none; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Card header */
+  .lead-head {
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .lead-score-badge {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+  }
+
+  .lead-score-badge .score-num {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .lead-score-badge .score-sub {
+    font-size: 8px;
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+  }
+
+  .score-hot    { background: rgba(229,62,62,0.15);  color: var(--red);    border: 1px solid rgba(229,62,62,0.3); }
+  .score-strong { background: rgba(221,107,32,0.15); color: var(--orange); border: 1px solid rgba(221,107,32,0.3); }
+  .score-mod    { background: rgba(201,168,76,0.15); color: var(--gold);   border: 1px solid var(--border-gold); }
+  .score-low    { background: var(--surface-3);      color: var(--text-muted); border: 1px solid var(--border); }
+
+  .lead-meta { flex: 1; min-width: 0; }
+
+  .lead-name {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .lead-location {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .lead-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .tag-nosite  { background: var(--red-soft);   color: var(--red);    border: 1px solid rgba(229,62,62,0.2); }
+  .tag-email   { background: var(--green-soft);  color: var(--green);  border: 1px solid rgba(56,161,105,0.2); }
+  .tag-rating  { background: rgba(201,168,76,0.1); color: var(--gold); border: 1px solid var(--border-gold); }
+  .tag-sent    { background: rgba(56,161,105,0.15); color: var(--green); border: 1px solid rgba(56,161,105,0.3); }
+
+  .lead-chevron {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform var(--transition);
+    margin-top: 4px;
+  }
+
+  .lead-card.expanded .lead-chevron { transform: rotate(180deg); }
+
+  /* Card body */
+  .lead-body {
+    border-top: 1px solid var(--border);
+    padding: 18px;
+  }
+
+  .lead-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 400px) {
+    .lead-detail-grid { grid-template-columns: 1fr; }
+  }
+
+  .detail-item { display: flex; flex-direction: column; gap: 3px; }
+
+  .detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .detail-value {
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .detail-value.email-val { color: var(--green); }
+  .detail-value.nosite    { color: var(--red); }
+
+  /* Score breakdown */
+  .score-breakdown {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .score-breakdown-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .score-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .score-item:last-child { margin-bottom: 0; }
+
+  .score-check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .score-check.earned { background: var(--green);  color: #fff; }
+  .score-check.missed { background: var(--surface-3); color: var(--text-dim); }
+
+  .score-item-label { flex: 1; font-size: 12px; color: var(--text-muted); }
+  .score-item-pts   { font-size: 12px; font-weight: 600; color: var(--gold); }
+
+  /* Pain points */
+  .pain-list {
+    margin-bottom: 16px;
+  }
+
+  .pain-list-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .pain-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .pain-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  /* Pitch area */
+  .pitch-area {
+    margin-bottom: 14px;
+  }
+
+  .pitch-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pitch-subject-wrap {
+    margin-bottom: 8px;
+  }
+
+  .pitch-subject-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  .pitch-subject-input:focus { border-color: var(--gold); }
+  .pitch-subject-input::placeholder { color: var(--text-dim); font-weight: 400; }
+
+  .pitch-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    resize: vertical;
+    min-height: 200px;
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  .pitch-textarea:focus { border-color: var(--gold); }
+  .pitch-textarea::placeholder { color: var(--text-dim); }
+
+  /* Action buttons */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition);
+    flex-shrink: 0;
+  }
+
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+  .btn-primary {
+    background: var(--gold);
+    color: #0D1623;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid rgba(229,62,62,0.3);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: var(--red-soft);
+  }
+
+  .btn-send {
+    background: var(--green);
+    color: #fff;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-send:hover:not(:disabled) {
+    background: #2F855A;
+    transform: translateY(-1px);
+  }
+
+  /* ── Empty & Error States ──────────────────────────────────────────────── */
+  .empty-state {
+    display: none;
+    text-align: center;
+    padding: 48px 20px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .empty-state.visible { display: block; }
+
+  .empty-icon {
+    font-size: 36px;
+    margin-bottom: 14px;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .empty-text { font-size: 13px; color: var(--text-dim); max-width: 320px; margin: 0 auto; }
+
+  .error-banner {
+    display: none;
+    background: var(--red-soft);
+    border: 1px solid rgba(229,62,62,0.3);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--red);
+  }
+
+  .error-banner.visible { display: block; }
+
+  /* ── Toast ─────────────────────────────────────────────────────────────── */
+  .toast-wrap {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+    white-space: nowrap;
+  }
+
+  .toast.success { border-color: rgba(56,161,105,0.4); color: var(--green); }
+  .toast.error   { border-color: rgba(229,62,62,0.4);  color: var(--red);   }
+
+  @keyframes toastIn  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+  /* ── Footer ─────────────────────────────────────────────────────────────── */
+  .app-footer {
+    text-align: center;
+    padding-top: 32px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .app-footer strong { color: var(--text-muted); }
+
+  /* ── Spinner ─────────────────────────────────────────────────────────────── */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <span class="brand-name">Ace Pitch Engine</span>
+    <span class="brand-tag">ADG</span>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-label" id="statusLabel">Ready</span>
+  </div>
+</header>
+
+<main class="app">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Ace Digitals Global — Lead Intelligence</div>
+    <h1 class="hero-title">Find Local Businesses <span>Without Websites</span></h1>
+    <p class="hero-sub">Discover qualified leads in the USA, UK, Canada and Europe. Score them, generate a custom pitch, and send a branded audit PDF — all in one tool.</p>
+  </section>
+
+  <!-- SEARCH -->
+  <section class="search-card">
+    <div class="search-card-title">Search for Leads</div>
+    <div class="search-grid">
+      <div class="field-group">
+        <label class="field-label" for="serviceInput">Trade / Service</label>
+        <input
+          class="field-input"
+          id="serviceInput"
+          type="text"
+          placeholder="e.g. Plumber"
+          list="serviceOptions"
+          autocomplete="off"
+        >
+        <datalist id="serviceOptions">
+          <option value="Plumber">
+          <option value="Electrician">
+          <option value="HVAC technician">
+          <option value="Roofer">
+          <option value="Carpenter">
+          <option value="Welder">
+          <option value="Painter">
+          <option value="Landscaper">
+          <option value="Laundry service">
+          <option value="Handyman">
+          <option value="Cleaner">
+          <option value="Tiler">
+          <option value="Locksmith">
+          <option value="Pest control">
+          <option value="Tree surgeon">
+          <option value="Plasterer">
+          <option value="Flooring contractor">
+          <option value="Fence installer">
+          <option value="Gutter cleaner">
+          <option value="Driveway paving">
+          <option value="Window cleaner">
+          <option value="Appliance repair">
+        </datalist>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="locationInput">Location</label>
+        <input
+          class="field-input"
+          id="locationInput"
+          type="text"
+          placeholder="e.g. Houston, Texas"
+          list="locationOptions"
+          autocomplete="off"
+        >
+        <datalist id="locationOptions">
+          <option value="Houston, Texas">
+          <option value="Dallas, Texas">
+          <option value="Phoenix, Arizona">
+          <option value="Philadelphia, Pennsylvania">
+          <option value="San Antonio, Texas">
+          <option value="Chicago, Illinois">
+          <option value="Jacksonville, Florida">
+          <option value="Columbus, Ohio">
+          <option value="Charlotte, North Carolina">
+          <option value="Indianapolis, Indiana">
+          <option value="Detroit, Michigan">
+          <option value="Memphis, Tennessee">
+          <option value="Louisville, Kentucky">
+          <option value="Baltimore, Maryland">
+          <option value="Manchester, UK">
+          <option value="Birmingham, UK">
+          <option value="Leeds, UK">
+          <option value="Glasgow, UK">
+          <option value="Sheffield, UK">
+          <option value="Bradford, UK">
+          <option value="Toronto, Ontario">
+          <option value="Calgary, Alberta">
+          <option value="Edmonton, Alberta">
+          <option value="Winnipeg, Manitoba">
+          <option value="Hamilton, Ontario">
+          <option value="Rotterdam, Netherlands">
+          <option value="Antwerp, Belgium">
+          <option value="Frankfurt, Germany">
+          <option value="Lyon, France">
+          <option value="Barcelona, Spain">
+          <option value="Milan, Italy">
+        </datalist>
+      </div>
+    </div>
+
+    <div class="search-examples">
+      <span class="search-example-label">Quick fill:</span>
+      <span class="example-tag" onclick="quickFill('Plumber','Houston, Texas')">Plumber · Houston</span>
+      <span class="example-tag" onclick="quickFill('Electrician','Manchester, UK')">Electrician · Manchester</span>
+      <span class="example-tag" onclick="quickFill('Roofer','Toronto, Ontario')">Roofer · Toronto</span>
+      <span class="example-tag" onclick="quickFill('HVAC technician','Phoenix, Arizona')">HVAC · Phoenix</span>
+      <span class="example-tag" onclick="quickFill('Carpenter','Chicago, Illinois')">Carpenter · Chicago</span>
+    </div>
+
+    <button class="btn-search" id="searchBtn" onclick="runSearch()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search for Leads
+    </button>
+  </section>
+
+  <!-- ERROR BANNER -->
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-label">
+      <span id="progressText">Connecting to SerpApi...</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-step" id="progressStep"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card">
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-label">Checked</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value gold" id="statQualified">0</div>
+      <div class="stat-label">Qualified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value red" id="statSkipped">0</div>
+      <div class="stat-label">Skipped</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green" id="statSent">0</div>
+      <div class="stat-label">Pitched</div>
+    </div>
+  </div>
+
+  <!-- RESULTS HEADER -->
+  <div class="results-header" id="resultsHeader">
+    <div class="results-title">Qualified Leads <span id="resultsCount">0</span></div>
+    <div class="sort-wrap">
+      <button class="sort-btn active" onclick="sortLeads('score')">Score</button>
+      <button class="sort-btn" onclick="sortLeads('name')">A-Z</button>
+    </div>
+  </div>
+
+  <!-- LEADS GRID -->
+  <div class="leads-grid" id="leadsGrid"></div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">🔍</div>
+    <div class="empty-title">No Qualified Leads Found</div>
+    <p class="empty-text">All businesses in this search either have websites or no email address was found. Try a different service or city.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="app-footer">
+    <strong>Ace Digitals Global</strong><br>
+    info@acedigitalsempire.com &nbsp;·&nbsp; acedigitalsempire.com &nbsp;·&nbsp; @DigitalUche<br>
+    WhatsApp: +234 907 958 1937
+  </footer>
+
+</main>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let leads = [];
+let sentIds = new Set(JSON.parse(localStorage.getItem('ace_sent_ids') || '[]'));
+let sortMode = 'score';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════
+function qs(sel) { return document.querySelector(sel); }
+function qid(id) { return document.getElementById(id); }
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function toast(msg, type = 'default') {
+  const wrap = qid('toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+function setProgress(pct, text, step = '') {
+  qid('progressFill').style.width = pct + '%';
+  qid('progressPct').textContent = pct + '%';
+  qid('progressText').textContent = text;
+  qid('progressStep').textContent = step;
+}
+
+function setStatus(text, active = false) {
+  qid('statusLabel').textContent = text;
+  qid('statusDot').style.background = active ? 'var(--gold)' : 'var(--green)';
+  qid('statusDot').style.boxShadow = active ? '0 0 6px var(--gold)' : '0 0 6px var(--green)';
+}
+
+function showError(msg) {
+  const el = qid('errorBanner');
+  el.textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 8000);
+}
+
+function quickFill(service, location) {
+  qid('serviceInput').value = service;
+  qid('locationInput').value = location;
+  qid('serviceInput').focus();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════════════════════════
+async function runSearch() {
+  const service  = qid('serviceInput').value.trim();
+  const location = qid('locationInput').value.trim();
+
+  if (!service || !location) {
+    toast('Please enter both a service and a location.', 'error');
+    return;
+  }
+
+  // Reset UI
+  qid('leadsGrid').innerHTML = '';
+  qid('emptyState').classList.remove('visible');
+  qid('errorBanner').classList.remove('visible');
+  qid('statsBar').classList.remove('visible');
+  qid('resultsHeader').classList.remove('visible');
+  qid('progressWrap').classList.add('visible');
+  qid('searchBtn').disabled = true;
+  leads = [];
+
+  setStatus('Searching...', true);
+  setProgress(10, 'Connecting to Google Maps via SerpApi...', 'Step 1 of 3: Finding local businesses');
+
+  try {
+    await sleep(400);
+    setProgress(30, 'Scanning Google Maps results...', 'Step 2 of 3: Filtering businesses without websites');
+
+    const res  = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ service, location }),
+    });
+
+    setProgress(70, 'Checking emails and scoring leads...', 'Step 3 of 3: Qualifying results');
+    await sleep(300);
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || `Server error ${res.status}`);
+    }
+
+    setProgress(100, 'Done!', `Found ${data.count} qualified lead${data.count !== 1 ? 's' : ''}`);
+    await sleep(600);
+
+    qid('progressWrap').classList.remove('visible');
+    leads = data.leads || [];
+
+    updateStats(leads);
+    renderLeads(leads);
+    setStatus('Ready');
+
+    if (data.source === 'cache') {
+      toast('Results loaded from cache (SerpApi credits saved)');
+    }
+
+  } catch (err) {
+    qid('progressWrap').classList.remove('visible');
+    showError(`Search failed: ${err.message}`);
+    setStatus('Error');
+    toast(err.message, 'error');
+  }
+
+  qid('searchBtn').disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════════════════════════════
+function updateStats(leadsArr) {
+  const sent = leadsArr.filter(l => sentIds.has(l.id)).length;
+  qid('statTotal').textContent   = leadsArr.length;
+  qid('statQualified').textContent = leadsArr.length;
+  qid('statSkipped').textContent = '?';
+  qid('statSent').textContent    = sent;
+  qid('statsBar').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER LEADS
+// ═══════════════════════════════════════════════════════════════════════════
+function sortLeads(mode) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const sorted = [...leads].sort((a, b) =>
+    mode === 'score'
+      ? b.score - a.score
+      : a.name.localeCompare(b.name)
+  );
+  renderLeads(sorted, false);
+}
+
+function renderLeads(leadsArr, animate = true) {
+  const grid = qid('leadsGrid');
+  grid.innerHTML = '';
+
+  if (!leadsArr || leadsArr.length === 0) {
+    qid('emptyState').classList.add('visible');
+    qid('resultsHeader').classList.remove('visible');
+    return;
+  }
+
+  qid('emptyState').classList.remove('visible');
+  qid('resultsHeader').classList.add('visible');
+  qid('resultsCount').textContent = leadsArr.length;
+
+  leadsArr.forEach((lead, idx) => {
+    const card = buildLeadCard(lead, idx, animate);
+    grid.appendChild(card);
+  });
+}
+
+function scoreClass(score) {
+  if (score >= 85) return 'score-hot';
+  if (score >= 70) return 'score-strong';
+  if (score >= 55) return 'score-mod';
+  return 'score-low';
+}
+
+function tierLabel(score) {
+  if (score >= 85) return 'HOT';
+  if (score >= 70) return 'STRONG';
+  if (score >= 55) return 'MOD';
+  return 'LOW';
+}
+
+function buildLeadCard(lead, idx, animate) {
+  const isSent = sentIds.has(lead.id);
+  const card   = document.createElement('div');
+  card.className = `lead-card${isSent ? ' sent' : ''}`;
+  card.id = `card_${lead.id}`;
+  if (animate) card.style.animationDelay = (idx * 60) + 'ms';
+
+  const emailDomain = (lead.email || '').split('@')[1] || '';
+  const ratingStr   = lead.rating > 0 ? `${lead.rating}★ (${lead.reviews} reviews)` : 'No rating';
+
+  // Score breakdown rows
+  const scoreRows = lead.scoreData
+    ? Object.entries(lead.scoreData).map(([key, s]) => `
+        <div class="score-item">
+          <div class="score-check ${s.earned ? 'earned' : 'missed'}">${s.earned ? '✓' : '-'}</div>
+          <span class="score-item-label">${escHtml(s.label)}</span>
+          <span class="score-item-pts">${s.earned ? '+' + s.points : '0'} pts</span>
+        </div>`).join('')
+    : '';
+
+  // Pain points
+  const painRows = (lead.painPoints || []).map(p =>
+    `<div class="pain-item"><div class="pain-dot"></div><span>${escHtml(p)}</span></div>`
+  ).join('');
+
+  card.innerHTML = `
+    <!-- HEAD -->
+    <div class="lead-head" onclick="toggleCard('${lead.id}')">
+      <div class="lead-score-badge ${scoreClass(lead.score)}">
+        <span class="score-num">${lead.score}</span>
+        <span class="score-sub">${tierLabel(lead.score)}</span>
+      </div>
+      <div class="lead-meta">
+        <div class="lead-name">${escHtml(lead.name)}</div>
+        <div class="lead-location">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${escHtml(lead.address || lead.location)}
+        </div>
+        <div class="lead-tags">
+          <span class="tag tag-nosite">No Website</span>
+          <span class="tag tag-email">${escHtml(emailDomain)}</span>
+          ${lead.rating > 0 ? `<span class="tag tag-rating">${lead.rating}★</span>` : ''}
+          ${isSent ? '<span class="tag tag-sent">Pitched</span>' : ''}
+        </div>
+      </div>
+      <svg class="lead-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+
+    <!-- BODY -->
+    <div class="lead-body">
+      <!-- Details -->
+      <div class="lead-detail-grid">
+        <div class="detail-item">
+          <span class="detail-label">Email</span>
+          <span class="detail-value email-val">${escHtml(lead.email)}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Website</span>
+          <span class="detail-value nosite">None found</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Category</span>
+          <span class="detail-value">${escHtml(lead.category || lead.service)}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Rating</span>
+          <span class="detail-value">${ratingStr}</span>
+        </div>
+      </div>
+
+      <!-- Score Breakdown -->
+      ${scoreRows ? `
+      <div class="score-breakdown">
+        <div class="score-breakdown-title">Score Breakdown — ${lead.score}/100</div>
+        ${scoreRows}
+      </div>` : ''}
+
+      <!-- Pain Points -->
+      ${painRows ? `
+      <div class="pain-list">
+        <div class="pain-list-title">Why They Need Us</div>
+        ${painRows}
+      </div>` : ''}
+
+      <!-- Pitch Area -->
+      <div class="pitch-area" id="pitchArea_${lead.id}">
+        <div class="pitch-label">
+          <span>Custom Pitch</span>
+          <span id="pitchStatus_${lead.id}" style="font-size:11px;color:var(--text-dim)">Not generated yet</span>
+        </div>
+        <div class="pitch-subject-wrap">
+          <input
+            class="pitch-subject-input"
+            id="pitchSubject_${lead.id}"
+            type="text"
+            placeholder="Subject line will appear here after generating..."
+            readonly
+          >
+        </div>
+        <textarea
+          class="pitch-textarea"
+          id="pitchText_${lead.id}"
+          placeholder="Click 'Generate Pitch' to write a custom outreach email for ${escHtml(lead.name)} using GPT-4o..."
+          readonly
+        ></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-row">
+        <button class="btn btn-primary" id="genBtn_${lead.id}" onclick="generatePitch('${lead.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Generate Pitch
+        </button>
+        <button class="btn btn-ghost" id="regenBtn_${lead.id}" onclick="generatePitch('${lead.id}')" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Regenerate
+        </button>
+        <button class="btn btn-send" id="sendBtn_${lead.id}" onclick="sendPitch('${lead.id}')" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send Pitch + PDF Audit
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  return card;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CARD TOGGLE
+// ═══════════════════════════════════════════════════════════════════════════
+function toggleCard(leadId) {
+  const card = qid(`card_${leadId}`);
+  const isExpanded = card.classList.contains('expanded');
+
+  // Collapse all others
+  document.querySelectorAll('.lead-card.expanded').forEach(c => c.classList.remove('expanded'));
+
+  if (!isExpanded) card.classList.add('expanded');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// GENERATE PITCH
+// ═══════════════════════════════════════════════════════════════════════════
+async function generatePitch(leadId) {
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  const genBtn   = qid(`genBtn_${leadId}`);
+  const regenBtn = qid(`regenBtn_${leadId}`);
+  const sendBtn  = qid(`sendBtn_${leadId}`);
+  const textarea = qid(`pitchText_${leadId}`);
+  const subject  = qid(`pitchSubject_${leadId}`);
+  const status   = qid(`pitchStatus_${leadId}`);
+
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<div class="spinner"></div> Generating...';
+  status.textContent = 'GPT-4o is writing your custom pitch...';
+  textarea.value = '';
+  textarea.readOnly = true;
+  sendBtn.disabled = true;
+  setStatus('Generating pitch...', true);
+
+  try {
+    const res  = await fetch('/api/pitch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Pitch generation failed');
+
+    subject.value   = data.subject;
+    textarea.value  = data.body;
+    textarea.readOnly = false;
+    subject.readOnly  = false;
+
+    status.textContent = 'Ready to send — edit if needed';
+    status.style.color = 'var(--green)';
+
+    genBtn.style.display   = 'none';
+    regenBtn.style.display = 'inline-flex';
+    sendBtn.disabled       = false;
+
+    toast(`Pitch ready for ${lead.name}`, 'success');
+
+  } catch (err) {
+    status.textContent = `Error: ${err.message}`;
+    status.style.color = 'var(--red)';
+    genBtn.disabled    = false;
+    genBtn.innerHTML   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Generate Pitch';
+    toast(err.message, 'error');
+  }
+
+  setStatus('Ready');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEND PITCH
+// ═══════════════════════════════════════════════════════════════════════════
+async function sendPitch(leadId) {
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  const sendBtn   = qid(`sendBtn_${leadId}`);
+  const pitchBody = qid(`pitchText_${leadId}`).value.trim();
+  const subject   = qid(`pitchSubject_${leadId}`).value.trim();
+  const status    = qid(`pitchStatus_${leadId}`);
+
+  if (!pitchBody || !subject) {
+    toast('Generate the pitch first before sending.', 'error');
+    return;
+  }
+
+  const confirm = window.confirm(
+    `Send pitch email to:\n\n${lead.name}\n${lead.email}\n\nA branded 6-page PDF audit will be attached.\n\nConfirm?`
+  );
+  if (!confirm) return;
+
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:#fff"></div> Generating PDF & Sending...';
+  status.textContent = 'Building PDF audit and sending email...';
+  setStatus('Sending...', true);
+
+  try {
+    const res = await fetch('/api/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead, subject, pitchBody }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Send failed');
+
+    // Mark as sent
+    sentIds.add(lead.id);
+    localStorage.setItem('ace_sent_ids', JSON.stringify([...sentIds]));
+
+    qid(`card_${leadId}`).classList.add('sent');
+    status.textContent = `Sent to ${lead.email}`;
+    status.style.color = 'var(--green)';
+    sendBtn.innerHTML  = '✓ Pitch Sent';
+    sendBtn.style.background = 'var(--green)';
+    sendBtn.style.opacity    = '0.6';
+
+    // Update sent count in stats
+    qid('statSent').textContent = sentIds.size;
+
+    toast(`Email + PDF sent to ${lead.name}`, 'success');
+
+  } catch (err) {
+    status.textContent = `Send failed: ${err.message}`;
+    status.style.color = 'var(--red)';
+    sendBtn.disabled   = false;
+    sendBtn.innerHTML  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Retry Send';
+    toast(err.message, 'error');
+  }
+
+  setStatus('Ready');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUT
+// ═══════════════════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.target.id === 'serviceInput' || e.target.id === 'locationInput')) {
+    runSearch();
+  }
+});
+</script>
+</body>
+</html>
