@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B2A4A">
+<title>Ace Pitch Engine | Ace Digitals Global</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D1623;--surface:#1B2A4A;--surface-2:#223358;--surface-3:#162038;
+  --border:rgba(255,255,255,0.07);--border-gold:rgba(201,168,76,0.35);
+  --text:#F0F4FF;--text-muted:#8A9BBF;--text-dim:#4A5E82;
+  --gold:#C9A84C;--gold-light:#E8C96C;
+  --red:#E53E3E;--red-soft:rgba(229,62,62,0.12);
+  --green:#38A169;--green-soft:rgba(56,161,105,0.12);
+  --orange:#DD6B20;--accent:#3B6FE8;
+  --radius:6px;--radius-lg:10px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --font-head:'Syne',sans-serif;--font-body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface-2);border-radius:4px}
+
+/* TOP BAR */
+.topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px)}
+.topbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head)}
+.brand-dot{width:8px;height:8px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold)}
+.brand-name{font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--text);text-transform:uppercase}
+.brand-tag{font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--border-gold);border-radius:20px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+.status-label{font-size:11px;color:var(--text-muted)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* TABS */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);padding:0 16px}
+.tab-btn{padding:14px 18px;font-size:12px;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* LAYOUT */
+.app{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+
+/* HERO */
+.hero{text-align:center;padding:28px 0 22px}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.hero-title{font-family:var(--font-head);font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.15;color:var(--text);margin-bottom:8px}
+.hero-title span{color:var(--gold)}
+.hero-sub{font-size:13px;color:var(--text-muted);max-width:440px;margin:0 auto;line-height:1.7}
+
+/* SEARCH CARD */
+.search-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;margin-bottom:22px;box-shadow:var(--shadow)}
+.search-card-title{font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.search-card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.search-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:480px){.search-grid{grid-template-columns:1fr}}
+.field-group{display:flex;flex-direction:column;gap:5px}
+.field-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase}
+.field-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;font-family:var(--font-body);font-size:14px;color:var(--text);transition:border-color .2s,box-shadow .2s;outline:none;-webkit-appearance:none}
+.field-input::placeholder{color:var(--text-dim)}
+.field-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+
+/* QUICK FILL TAGS */
+.search-examples{font-size:11px;color:var(--text-dim);margin-bottom:12px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.search-example-label{color:var(--text-muted)}
+.example-tag{background:var(--surface-3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.example-tag:hover,.example-tag:active{border-color:var(--gold);color:var(--gold)}
+
+/* NICHE GUIDE */
+.niche-guide{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.niche-guide-title{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.niche-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:400px){.niche-grid{grid-template-columns:1fr}}
+.niche-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;transition:border-color .2s}
+.niche-item:hover{border-color:var(--gold)}
+.niche-priority{font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.niche-service{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.niche-location{font-size:11px;color:var(--text-muted)}
+.niche-why{font-size:10px;color:var(--text-dim);margin-top:4px;line-height:1.4}
+
+.btn-search{width:100%;background:var(--gold);color:#0D1623;border:none;border-radius:var(--radius);padding:13px 24px;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-search:hover:not(:disabled){background:var(--gold-light);transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.3)}
+.btn-search:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* PROGRESS */
+.progress-wrap{display:none;margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px}
+.progress-wrap.visible{display:block}
+.progress-label{font-size:12px;color:var(--text-muted);margin-bottom:10px;display:flex;justify-content:space-between}
+.progress-bar-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;width:0%;transition:width .4s ease;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{filter:brightness(1)}50%{filter:brightness(1.3)}100%{filter:brightness(1)}}
+.progress-step{font-size:11px;color:var(--text-dim);margin-top:8px}
+
+/* STATS */
+.stats-bar{display:none;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stats-bar.visible{display:grid}
+@media(max-width:480px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;text-align:center}
+.stat-value{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.stat-value.gold{color:var(--gold)}.stat-value.red{color:var(--red)}.stat-value.green{color:var(--green)}
+.stat-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em}
+
+/* RESULTS HEADER */
+.results-header{display:none;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.results-header.visible{display:flex}
+.results-title{font-family:var(--font-head);font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+.results-title span{color:var(--gold)}
+.sort-wrap{display:flex;gap:6px}
+.sort-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.sort-btn.active,.sort-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.08)}
+
+/* LEAD CARDS */
+.leads-grid{display:flex;flex-direction:column;gap:12px}
+.lead-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .2s,box-shadow .2s;animation:slideIn .3s ease both}
+.lead-card:hover{border-color:rgba(201,168,76,.25);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.lead-card.sent{border-color:rgba(56,161,105,.3)}
+.lead-card.low-score{opacity:.75}
+.lead-card.expanded .lead-body{display:block}
+.lead-card .lead-body{display:none}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.lead-head{padding:14px 16px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;user-select:none}
+.lead-score-badge{flex-shrink:0;width:50px;height:50px;border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-head)}
+.lead-score-badge .score-num{font-size:19px;font-weight:800;line-height:1}
+.lead-score-badge .score-sub{font-size:8px;opacity:.7;letter-spacing:.05em}
+.score-hot{background:rgba(229,62,62,.15);color:var(--red);border:1px solid rgba(229,62,62,.3)}
+.score-strong{background:rgba(221,107,32,.15);color:var(--orange);border:1px solid rgba(221,107,32,.3)}
+.score-mod{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid var(--border-gold)}
+.score-low{background:var(--surface-3);color:var(--text-muted);border:1px solid var(--border)}
+
+.lead-meta{flex:1;min-width:0}
+.lead-name{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead-location{font-size:12px;color:var(--text-muted);margin-bottom:7px;display:flex;align-items:center;gap:4px}
+.lead-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase}
+.tag-nosite{background:var(--red-soft);color:var(--red);border:1px solid rgba(229,62,62,.2)}
+.tag-email{background:var(--green-soft);color:var(--green);border:1px solid rgba(56,161,105,.2)}
+.tag-rating{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid var(--border-gold)}
+.tag-sent{background:rgba(56,161,105,.15);color:var(--green);border:1px solid rgba(56,161,105,.3)}
+.tag-low{background:rgba(113,128,150,.1);color:var(--text-dim);border:1px solid var(--border)}
+.lead-chevron{flex-shrink:0;width:18px;height:18px;color:var(--text-dim);transition:transform .2s;margin-top:6px}
+.lead-card.expanded .lead-chevron{transform:rotate(180deg)}
+
+.lead-body{border-top:1px solid var(--border);padding:16px}
+.lead-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+@media(max-width:400px){.lead-detail-grid{grid-template-columns:1fr}}
+.detail-item{display:flex;flex-direction:column;gap:3px}
+.detail-label{font-size:10px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em}
+.detail-value{font-size:13px;color:var(--text);word-break:break-all}
+.detail-value.email-val{color:var(--green)}.detail-value.nosite{color:var(--red)}
+
+/* SCORE BREAKDOWN */
+.score-breakdown{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:14px}
+.score-breakdown-title{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.score-item{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.score-item:last-child{margin-bottom:0}
+.score-check{width:15px;height:15px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.score-check.earned{background:var(--green);color:#fff}.score-check.missed{background:var(--surface-3);color:var(--text-dim)}
+.score-item-label{flex:1;font-size:12px;color:var(--text-muted)}
+.score-item-pts{font-size:12px;font-weight:600;color:var(--gold)}
+
+/* PAIN POINTS */
+.pain-list{margin-bottom:14px}
+.pain-list-title{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.pain-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:5px;font-size:12px;color:var(--text-muted)}
+.pain-dot{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
+
+/* PITCH AREA */
+.pitch-area{margin-bottom:12px}
+.pitch-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+.pitch-subject-wrap{margin-bottom:7px}
+.pitch-subject-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--gold);outline:none;transition:border-color .2s}
+.pitch-subject-input:focus{border-color:var(--gold)}
+.pitch-subject-input::placeholder{color:var(--text-dim);font-weight:400}
+.pitch-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:var(--font-body);font-size:13px;color:var(--text);line-height:1.7;resize:vertical;min-height:180px;outline:none;transition:border-color .2s}
+.pitch-textarea:focus{border-color:var(--gold)}
+.pitch-textarea::placeholder{color:var(--text-dim)}
+
+/* BUTTONS */
+.action-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--radius);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;flex-shrink:0}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.btn-primary{background:var(--gold);color:#0D1623}
+.btn-primary:hover:not(:disabled){background:var(--gold-light);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.btn-ghost:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.btn-preview{background:rgba(59,111,232,.15);color:var(--accent);border:1px solid rgba(59,111,232,.3)}
+.btn-preview:hover:not(:disabled){background:rgba(59,111,232,.25)}
+.btn-send{background:var(--green);color:#fff;flex:1;justify-content:center}
+.btn-send:hover:not(:disabled){background:#2F855A;transform:translateY(-1px)}
+
+/* EMPTY + ERROR */
+.empty-state{display:none;text-align:center;padding:44px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-lg)}
+.empty-state.visible{display:block}
+.empty-icon{font-size:34px;margin-bottom:12px;opacity:.5}
+.empty-title{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text-muted);margin-bottom:7px}
+.empty-text{font-size:13px;color:var(--text-dim);max-width:320px;margin:0 auto}
+.error-banner{display:none;background:var(--red-soft);border:1px solid rgba(229,62,62,.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--red);line-height:1.5}
+.error-banner.visible{display:block}
+
+/* HISTORY TABLE */
+.history-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.history-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.history-title{font-family:var(--font-head);font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase}
+.history-clear{font-size:11px;color:var(--text-dim);cursor:pointer;padding:4px 10px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text-muted);transition:all .2s}
+.history-clear:hover{border-color:var(--red);color:var(--red)}
+.history-empty{padding:40px;text-align:center;color:var(--text-dim);font-size:13px}
+.history-row{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px}
+.history-row:last-child{border-bottom:none}
+.history-score{flex-shrink:0;width:38px;height:38px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:14px;font-weight:800}
+.history-info{flex:1;min-width:0}
+.history-name{font-weight:600;color:var(--text);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-meta{font-size:11px;color:var(--text-dim);margin-top:3px}
+.history-subject{font-size:11px;color:var(--text-muted);margin-top:4px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-date{font-size:10px;color:var(--text-dim);flex-shrink:0;text-align:right}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 18px;font-size:13px;color:var(--text);box-shadow:var(--shadow);animation:toastIn .3s ease,toastOut .3s ease 2.7s forwards;white-space:nowrap}
+.toast.success{border-color:rgba(56,161,105,.4);color:var(--green)}
+.toast.error{border-color:rgba(229,62,62,.4);color:var(--red)}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+
+/* FOOTER */
+.app-footer{text-align:center;padding-top:28px;font-size:11px;color:var(--text-dim);line-height:1.8}
+.app-footer strong{color:var(--text-muted)}
+
+/* SPINNER */
+.spinner{width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <span class="brand-name">Ace Pitch Engine</span>
+    <span class="brand-tag">ADG</span>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-label" id="statusLabel">Ready</span>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('search')">Search Leads</button>
+  <button class="tab-btn" onclick="switchTab('history')">Pitch History <span id="historyCount" style="color:var(--gold)"></span></button>
+</div>
+
+<main class="app">
+
+  <!-- SEARCH TAB -->
+  <div class="tab-panel active" id="tab-search">
+
+    <section class="hero">
+      <div class="hero-eyebrow">Ace Digitals Global — Lead Intelligence</div>
+      <h1 class="hero-title">Find Local Businesses <span>Without Websites</span></h1>
+      <p class="hero-sub">Target the sweet spot: 10 to 50 reviews, no website, free email. Score, pitch, and send a branded audit PDF in one flow.</p>
+    </section>
+
+    <section class="search-card">
+      <div class="search-card-title">Search for Leads</div>
+
+      <!-- NICHE GUIDE -->
+      <div class="niche-guide">
+        <div class="niche-guide-title">Research-Backed Priority Niches — Tap to fill</div>
+        <div class="niche-grid" id="nicheGrid"></div>
+      </div>
+
+      <div class="search-grid">
+        <div class="field-group">
+          <label class="field-label" for="serviceInput">Trade / Service</label>
+          <input class="field-input" id="serviceInput" type="text" placeholder="e.g. Fence Contractor" list="serviceOptions" autocomplete="off">
+          <datalist id="serviceOptions">
+            <option value="Fence Contractor"><option value="Concrete Contractor"><option value="Mobile Auto Detailer">
+            <option value="Asphalt Sealcoating"><option value="Epoxy Flooring Contractor"><option value="Deck Builder">
+            <option value="Tree Service"><option value="Pressure Washing"><option value="Garage Door Installer">
+            <option value="Welding and Metal Fabrication"><option value="Commercial Kitchen Cleaning">
+            <option value="Parking Lot Striping"><option value="Plumber"><option value="Electrician">
+            <option value="HVAC Technician"><option value="Roofer"><option value="Carpenter"><option value="Handyman">
+          </datalist>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="locationInput">City, State</label>
+          <input class="field-input" id="locationInput" type="text" placeholder="e.g. Waco, Texas" list="locationOptions" autocomplete="off">
+          <datalist id="locationOptions">
+            <option value="Waco, Texas"><option value="Tyler, Texas"><option value="Lubbock, Texas">
+            <option value="Beaumont, Texas"><option value="Killeen, Texas"><option value="Midland, Texas">
+            <option value="Macon, Georgia"><option value="Savannah, Georgia"><option value="Augusta, Georgia">
+            <option value="Columbus, Georgia"><option value="Warner Robins, Georgia">
+            <option value="Murfreesboro, Tennessee"><option value="Clarksville, Tennessee"><option value="Jackson, Tennessee">
+            <option value="Chattanooga, Tennessee"><option value="Cookeville, Tennessee">
+            <option value="Ocala, Florida"><option value="Lakeland, Florida"><option value="Fort Pierce, Florida">
+            <option value="Pensacola, Florida"><option value="Daytona Beach, Florida"><option value="Fort Myers, Florida">
+            <option value="Port Charlotte, Florida"><option value="Tallahassee, Florida">
+          </datalist>
+        </div>
+      </div>
+
+      <div class="search-examples">
+        <span class="search-example-label">Quick fill:</span>
+        <span class="example-tag" onclick="quickFill('Fence Contractor','Waco, Texas')">Fence · Waco TX</span>
+        <span class="example-tag" onclick="quickFill('Concrete Contractor','Macon, Georgia')">Concrete · Macon GA</span>
+        <span class="example-tag" onclick="quickFill('Mobile Auto Detailer','Ocala, Florida')">Detailer · Ocala FL</span>
+        <span class="example-tag" onclick="quickFill('Asphalt Sealcoating','Murfreesboro, Tennessee')">Asphalt · TN</span>
+        <span class="example-tag" onclick="quickFill('Epoxy Flooring Contractor','Fort Myers, Florida')">Epoxy · FL</span>
+      </div>
+
+      <button class="btn-search" id="searchBtn" onclick="runSearch()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search for Leads
+      </button>
+    </section>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label">
+        <span id="progressText">Connecting...</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-step" id="progressStep"></div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Checked</div></div>
+      <div class="stat-card"><div class="stat-value gold" id="statQualified">0</div><div class="stat-label">Qualified</div></div>
+      <div class="stat-card"><div class="stat-value red" id="statSkipped">0</div><div class="stat-label">Skipped</div></div>
+      <div class="stat-card"><div class="stat-value green" id="statSent">0</div><div class="stat-label">Pitched</div></div>
+    </div>
+
+    <div class="results-header" id="resultsHeader">
+      <div class="results-title">Qualified Leads <span id="resultsCount">0</span></div>
+      <div class="sort-wrap">
+        <button class="sort-btn active" onclick="sortLeads('score',event)">Score</button>
+        <button class="sort-btn" onclick="sortLeads('name',event)">A-Z</button>
+      </div>
+    </div>
+
+    <div class="leads-grid" id="leadsGrid"></div>
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">No Qualified Leads Found</div>
+      <p class="empty-text">All businesses either have websites, no email, or too many reviews. Try a secondary city or different service.</p>
+    </div>
+
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="tab-panel" id="tab-history">
+    <div style="padding:20px 0 16px">
+      <div class="results-title" style="display:block;margin-bottom:4px">Pitch History</div>
+      <div style="font-size:12px;color:var(--text-dim)">Every pitch you have sent from this device</div>
+    </div>
+    <div class="history-panel">
+      <div class="history-header">
+        <span class="history-title">Sent Pitches</span>
+        <button class="history-clear" onclick="clearHistory()">Clear All</button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <strong>Ace Digitals Global</strong><br>
+    acedigitalsglobal@gmail.com &nbsp;·&nbsp; acedigitalsempire.com &nbsp;·&nbsp; @DigitalUche<br>
+    WhatsApp: +1 (873) 352-2008
+  </footer>
+
+</main>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let leads      = [];
+let sortMode   = 'score';
+let skippedCount = 0;
+
+// Persistent storage
+const SENT_KEY    = 'ace_sent_ids';
+const HISTORY_KEY = 'ace_pitch_history';
+let sentIds = new Set(JSON.parse(localStorage.getItem(SENT_KEY) || '[]'));
+let pitchHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+// ═══════════════════════════════════════════
+// PRIORITY NICHES (from research)
+// ═══════════════════════════════════════════
+const NICHES = [
+  { priority:'#1 Priority', service:'Fence Contractor',      location:'Waco, Texas',            why:'1,500+ in TX, high ticket, low agency saturation' },
+  { priority:'#2 Priority', service:'Concrete Contractor',   location:'Macon, Georgia',          why:'Owner-ops everywhere, poor digital presence' },
+  { priority:'#3 Priority', service:'Mobile Auto Detailer',  location:'Ocala, Florida',          why:'FB + Maps only, no websites, active market' },
+  { priority:'#4 Priority', service:'Asphalt Sealcoating',   location:'Murfreesboro, Tennessee', why:'Family-owned, referral-only, zero web presence' },
+  { priority:'#5 Priority', service:'Epoxy Flooring Contractor', location:'Fort Myers, Florida', why:'Instagram-only operators, no lead funnel' },
+  { priority:'Underrated',  service:'Parking Lot Striping',  location:'Chattanooga, Tennessee',  why:'No one is pitching them — asymmetric opportunity' },
+];
+
+function buildNicheGrid() {
+  const grid = document.getElementById('nicheGrid');
+  grid.innerHTML = NICHES.map(n => `
+    <div class="niche-item" onclick="quickFill('${n.service}','${n.location}')">
+      <div class="niche-priority">${n.priority}</div>
+      <div class="niche-service">${n.service}</div>
+      <div class="niche-location">${n.location}</div>
+      <div class="niche-why">${n.why}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const qid  = id  => document.getElementById(id);
+const escH = s   => { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function toast(msg, type='default') {
+  const wrap = qid('toastWrap');
+  const el   = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+function setProgress(pct, text, step='') {
+  qid('progressFill').style.width  = pct + '%';
+  qid('progressPct').textContent   = pct + '%';
+  qid('progressText').textContent  = text;
+  qid('progressStep').textContent  = step;
+}
+
+function setStatus(text, active=false) {
+  qid('statusLabel').textContent  = text;
+  qid('statusDot').style.background  = active ? 'var(--gold)' : 'var(--green)';
+  qid('statusDot').style.boxShadow   = active ? '0 0 6px var(--gold)' : '0 0 6px var(--green)';
+}
+
+function showError(msg) {
+  const el = qid('errorBanner');
+  el.innerHTML = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 10000);
+}
+
+function quickFill(service, location) {
+  qid('serviceInput').value  = service;
+  qid('locationInput').value = location;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['search','history'][i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  qid(`tab-${tab}`).classList.add('active');
+  if (tab === 'history') renderHistory();
+}
+
+// ═══════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════
+async function runSearch() {
+  const service  = qid('serviceInput').value.trim();
+  const location = qid('locationInput').value.trim();
+
+  if (!service || !location) { toast('Enter both service and location.','error'); return; }
+
+  qid('leadsGrid').innerHTML = '';
+  qid('emptyState').classList.remove('visible');
+  qid('errorBanner').classList.remove('visible');
+  qid('statsBar').classList.remove('visible');
+  qid('resultsHeader').classList.remove('visible');
+  qid('progressWrap').classList.add('visible');
+  qid('searchBtn').disabled = true;
+  leads = []; skippedCount = 0;
+
+  setStatus('Searching...', true);
+  setProgress(10, 'Connecting to Google Maps via SerpApi...', 'Step 1 of 3: Finding local businesses');
+
+  try {
+    await sleep(300);
+    setProgress(35, 'Scanning results and filtering businesses with websites...', 'Step 2 of 3: Applying no-website filter');
+
+    const res  = await fetch('/api/search', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ service, location }),
+    });
+
+    setProgress(75, 'Scoring leads and checking emails...', 'Step 3 of 3: Qualifying results');
+    await sleep(300);
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+
+    setProgress(100, 'Done!', `${data.count} qualified lead${data.count!==1?'s':''} found`);
+    await sleep(500);
+
+    qid('progressWrap').classList.remove('visible');
+    leads = data.leads || [];
+
+    // Estimate skipped (raw returned - qualified)
+    skippedCount = Math.max(0, (data.rawCount || leads.length + 3) - leads.length);
+    updateStats(leads);
+    renderLeads(leads);
+    setStatus('Ready');
+
+    if (data.source === 'cache') toast('Loaded from cache — SerpApi credits saved');
+
+  } catch (err) {
+    qid('progressWrap').classList.remove('visible');
+    showError(`Search failed: ${err.message}`);
+    setStatus('Error');
+    toast(err.message, 'error');
+  }
+
+  qid('searchBtn').disabled = false;
+}
+
+// ═══════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════
+function updateStats(leadsArr) {
+  const sent = leadsArr.filter(l => sentIds.has(l.id)).length;
+  qid('statTotal').textContent     = leadsArr.length + skippedCount;
+  qid('statQualified').textContent = leadsArr.length;
+  qid('statSkipped').textContent   = skippedCount;
+  qid('statSent').textContent      = sent;
+  qid('statsBar').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════
+// RENDER LEADS
+// ═══════════════════════════════════════════
+function scoreClass(s) {
+  return s>=80?'score-hot':s>=65?'score-strong':s>=45?'score-mod':'score-low';
+}
+function tierLabel(s) {
+  return s>=80?'HOT':s>=65?'STRONG':s>=45?'MOD':'LOW';
+}
+
+function sortLeads(mode, event) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  if (event) event.target.classList.add('active');
+  const sorted = [...leads].sort((a,b) =>
+    mode==='score' ? b.score-a.score : a.name.localeCompare(b.name));
+  renderLeads(sorted, false);
+}
+
+function renderLeads(arr, animate=true) {
+  const grid = qid('leadsGrid');
+  grid.innerHTML = '';
+
+  if (!arr || arr.length === 0) {
+    qid('emptyState').classList.add('visible');
+    qid('resultsHeader').classList.remove('visible');
+    return;
+  }
+
+  qid('emptyState').classList.remove('visible');
+  qid('resultsHeader').classList.add('visible');
+  qid('resultsCount').textContent = arr.length;
+
+  arr.forEach((lead, idx) => {
+    const card = buildLeadCard(lead, idx, animate);
+    grid.appendChild(card);
+  });
+}
+
+function buildLeadCard(lead, idx, animate) {
+  const isSent      = sentIds.has(lead.id);
+  const isLowScore  = lead.score < 45;
+  const card        = document.createElement('div');
+  card.className    = `lead-card${isSent?' sent':''}${isLowScore?' low-score':''}`;
+  card.id           = `card_${lead.id}`;
+  if (animate) card.style.animationDelay = (idx * 55) + 'ms';
+
+  const emailDomain = (lead.email||'').split('@')[1]||'';
+  const ratingStr   = lead.rating>0 ? `${lead.rating}★ (${lead.reviews} reviews)` : 'No rating';
+
+  const scoreRows = lead.scoreData
+    ? Object.entries(lead.scoreData).map(([,s]) => `
+        <div class="score-item">
+          <div class="score-check ${s.earned?'earned':'missed'}">${s.earned?'✓':'-'}</div>
+          <span class="score-item-label">${escH(s.label)}</span>
+          <span class="score-item-pts">${s.earned?'+'+s.points:'0'} pts</span>
+        </div>`).join('')
+    : '';
+
+  const painRows = (lead.painPoints||[]).map(p =>
+    `<div class="pain-item"><div class="pain-dot"></div><span>${escH(p)}</span></div>`).join('');
+
+  const sweetSpotWarning = lead.reviews > 50
+    ? `<div style="background:rgba(229,62,62,.08);border:1px solid rgba(229,62,62,.2);border-radius:4px;padding:8px 10px;font-size:11px;color:var(--red);margin-bottom:12px">⚠ ${lead.reviews} reviews — above the 50-review ceiling. This business has likely been pitched before. Pitch last.</div>`
+    : '';
+
+  card.innerHTML = `
+    <div class="lead-head" onclick="toggleCard('${lead.id}')">
+      <div class="lead-score-badge ${scoreClass(lead.score)}">
+        <span class="score-num">${lead.score}</span>
+        <span class="score-sub">${tierLabel(lead.score)}</span>
+      </div>
+      <div class="lead-meta">
+        <div class="lead-name">${escH(lead.name)}</div>
+        <div class="lead-location">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${escH(lead.address||lead.location)}
+        </div>
+        <div class="lead-tags">
+          <span class="tag tag-nosite">No Website</span>
+          <span class="tag tag-email">${escH(emailDomain)}</span>
+          ${lead.rating>0?`<span class="tag tag-rating">${lead.rating}★</span>`:''}
+          ${lead.reviews>50?'<span class="tag tag-low">High Reviews</span>':''}
+          ${isSent?'<span class="tag tag-sent">Pitched</span>':''}
+        </div>
+      </div>
+      <svg class="lead-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <div class="lead-body">
+      ${sweetSpotWarning}
+      <div class="lead-detail-grid">
+        <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value email-val">${escH(lead.email)}</span></div>
+        <div class="detail-item"><span class="detail-label">Website</span><span class="detail-value nosite">None found</span></div>
+        <div class="detail-item"><span class="detail-label">Category</span><span class="detail-value">${escH(lead.category||lead.service)}</span></div>
+        <div class="detail-item"><span class="detail-label">Rating</span><span class="detail-value">${ratingStr}</span></div>
+      </div>
+
+      ${scoreRows?`<div class="score-breakdown"><div class="score-breakdown-title">Score Breakdown — ${lead.score}/100</div>${scoreRows}</div>`:''}
+      ${painRows?`<div class="pain-list"><div class="pain-list-title">Why They Need a Website</div>${painRows}</div>`:''}
+
+      <div class="pitch-area" id="pitchArea_${lead.id}">
+        <div class="pitch-label">
+          <span>Custom Pitch</span>
+          <span id="pitchStatus_${lead.id}" style="font-size:11px;color:var(--text-dim)">Not generated yet</span>
+        </div>
+        <div class="pitch-subject-wrap">
+          <input class="pitch-subject-input" id="pitchSubject_${lead.id}" type="text" placeholder="Subject line appears after generating..." readonly>
+        </div>
+        <textarea class="pitch-textarea" id="pitchText_${lead.id}"
+          placeholder="Click Generate Pitch to write a custom email for ${escH(lead.name)} using GPT-4o..." readonly></textarea>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-primary" id="genBtn_${lead.id}" onclick="generatePitch('${lead.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Generate Pitch
+        </button>
+        <button class="btn btn-ghost" id="regenBtn_${lead.id}" onclick="generatePitch('${lead.id}')" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Regenerate
+        </button>
+        <button class="btn btn-preview" id="previewBtn_${lead.id}" onclick="previewPDF('${lead.id}')" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Preview PDF
+        </button>
+        <button class="btn btn-send" id="sendBtn_${lead.id}" onclick="sendPitch('${lead.id}')" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send Pitch + PDF
+        </button>
+      </div>
+    </div>`;
+
+  return card;
+}
+
+// ═══════════════════════════════════════════
+// TOGGLE CARD
+// ═══════════════════════════════════════════
+function toggleCard(leadId) {
+  const card       = qid(`card_${leadId}`);
+  const isExpanded = card.classList.contains('expanded');
+  document.querySelectorAll('.lead-card.expanded').forEach(c => c.classList.remove('expanded'));
+  if (!isExpanded) card.classList.add('expanded');
+}
+
+// ═══════════════════════════════════════════
+// GENERATE PITCH
+// ═══════════════════════════════════════════
+async function generatePitch(leadId) {
+  const lead     = leads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  const genBtn   = qid(`genBtn_${leadId}`);
+  const regenBtn = qid(`regenBtn_${leadId}`);
+  const prevBtn  = qid(`previewBtn_${leadId}`);
+  const sendBtn  = qid(`sendBtn_${leadId}`);
+  const textarea = qid(`pitchText_${leadId}`);
+  const subject  = qid(`pitchSubject_${leadId}`);
+  const status   = qid(`pitchStatus_${leadId}`);
+
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<div class="spinner"></div> Generating...';
+  status.textContent = 'GPT-4o is writing your custom pitch...';
+  status.style.color = 'var(--text-dim)';
+  textarea.value   = '';
+  textarea.readOnly = true;
+  sendBtn.disabled = true;
+  prevBtn.style.display = 'none';
+  setStatus('Generating...', true);
+
+  try {
+    const res  = await fetch('/api/pitch', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ lead }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Pitch generation failed');
+
+    subject.value     = data.subject;
+    textarea.value    = data.body;
+    textarea.readOnly = false;
+    subject.readOnly  = false;
+
+    status.textContent = 'Ready — review and edit before sending';
+    status.style.color = 'var(--green)';
+
+    genBtn.style.display   = 'none';
+    regenBtn.style.display = 'inline-flex';
+    prevBtn.style.display  = 'inline-flex';
+    sendBtn.disabled       = false;
+
+    toast(`Pitch ready for ${lead.name}`, 'success');
+
+  } catch (err) {
+    status.textContent = `Error: ${err.message}`;
+    status.style.color = 'var(--red)';
+    genBtn.disabled    = false;
+    genBtn.innerHTML   = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Generate Pitch';
+    toast(err.message, 'error');
+  }
+  setStatus('Ready');
+}
+
+// ═══════════════════════════════════════════
+// PREVIEW PDF
+// ═══════════════════════════════════════════
+async function previewPDF(leadId) {
+  const lead   = leads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  const prevBtn = qid(`previewBtn_${leadId}`);
+  prevBtn.disabled = true;
+  prevBtn.innerHTML = '<div class="spinner"></div> Building PDF...';
+
+  try {
+    const res = await fetch('/api/send/preview-pdf', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ lead }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'PDF generation failed');
+    }
+
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    toast('PDF opened in new tab', 'success');
+
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+
+  prevBtn.disabled = false;
+  prevBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Preview PDF';
+}
+
+// ═══════════════════════════════════════════
+// SEND PITCH
+// ═══════════════════════════════════════════
+async function sendPitch(leadId) {
+  const lead      = leads.find(l => l.id === leadId);
+  if (!lead) return;
+
+  const sendBtn   = qid(`sendBtn_${leadId}`);
+  const pitchBody = qid(`pitchText_${leadId}`).value.trim();
+  const subject   = qid(`pitchSubject_${leadId}`).value.trim();
+  const status    = qid(`pitchStatus_${leadId}`);
+
+  if (!pitchBody || !subject) { toast('Generate the pitch first.', 'error'); return; }
+
+  const ok = window.confirm(
+    `Send pitch to:\n\n${lead.name}\n${lead.email}\n\nA 6-page branded PDF audit will be attached.\n\nConfirm?`
+  );
+  if (!ok) return;
+
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<div class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div> Sending...';
+  status.textContent = 'Generating PDF and sending email...';
+  setStatus('Sending...', true);
+
+  try {
+    const res  = await fetch('/api/send', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ lead, subject, pitchBody }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Send failed');
+
+    // Save to history
+    const historyEntry = {
+      id:       lead.id,
+      name:     lead.name,
+      email:    lead.email,
+      service:  lead.service || lead.category,
+      location: lead.location,
+      score:    lead.score,
+      subject,
+      sentAt:   new Date().toISOString(),
+    };
+    pitchHistory.unshift(historyEntry);
+    if (pitchHistory.length > 200) pitchHistory = pitchHistory.slice(0, 200);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(pitchHistory));
+
+    // Mark sent
+    sentIds.add(lead.id);
+    localStorage.setItem(SENT_KEY, JSON.stringify([...sentIds]));
+
+    qid(`card_${leadId}`).classList.add('sent');
+    status.textContent = `Sent to ${lead.email}`;
+    status.style.color = 'var(--green)';
+    sendBtn.innerHTML  = '✓ Pitch Sent';
+    sendBtn.style.background = 'var(--green)';
+    sendBtn.style.opacity    = '.6';
+
+    qid('statSent').textContent = [...sentIds].filter(id => leads.find(l=>l.id===id)).length;
+    updateHistoryBadge();
+
+    toast(`Email + PDF sent to ${lead.name}`, 'success');
+
+  } catch (err) {
+    status.textContent = `Failed: ${err.message}`;
+    status.style.color = 'var(--red)';
+    sendBtn.disabled   = false;
+    sendBtn.innerHTML  = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Retry Send';
+    toast(err.message, 'error');
+  }
+  setStatus('Ready');
+}
+
+// ═══════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════
+function updateHistoryBadge() {
+  const badge = qid('historyCount');
+  badge.textContent = pitchHistory.length > 0 ? `(${pitchHistory.length})` : '';
+}
+
+function renderHistory() {
+  const list = qid('historyList');
+  if (pitchHistory.length === 0) {
+    list.innerHTML = '<div class="history-empty">No pitches sent yet. Start searching for leads.</div>';
+    return;
+  }
+  list.innerHTML = pitchHistory.map(h => {
+    const sc   = h.score||0;
+    const cls  = sc>=80?'score-hot':sc>=65?'score-strong':sc>=45?'score-mod':'score-low';
+    const date = new Date(h.sentAt);
+    const dateStr = date.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const timeStr = date.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    return `
+      <div class="history-row">
+        <div class="history-score ${cls}">${sc}</div>
+        <div class="history-info">
+          <div class="history-name">${escH(h.name)}</div>
+          <div class="history-meta">${escH(h.email)} &nbsp;·&nbsp; ${escH(h.service)} &nbsp;·&nbsp; ${escH(h.location)}</div>
+          <div class="history-subject">"${escH(h.subject)}"</div>
+        </div>
+        <div class="history-date">${dateStr}<br><span style="color:var(--gold)">${timeStr}</span></div>
+      </div>`;
+  }).join('');
+}
+
+function clearHistory() {
+  if (!confirm('Clear all pitch history? This cannot be undone.')) return;
+  pitchHistory = [];
+  sentIds.clear();
+  localStorage.removeItem(HISTORY_KEY);
+  localStorage.removeItem(SENT_KEY);
+  updateHistoryBadge();
+  renderHistory();
+  toast('History cleared');
+}
+
+// ═══════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && (e.target.id==='serviceInput'||e.target.id==='locationInput')) runSearch();
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+buildNicheGrid();
+updateHistoryBadge();
+</script>
+</body>
+</html>
