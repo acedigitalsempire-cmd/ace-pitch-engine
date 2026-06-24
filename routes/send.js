@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
 
     // Owner copy with PDF attached so you can see exactly what was sent
     await resendPost({
-      from:    `Ace Pitch Engine <${fromEmail}>`,
+      from:    `Richard U. | Ace Digitals Global <${fromEmail}>`,
       to:      [ownerCopy],
       subject: `[SENT] ${subject} → ${lead.email}`,
       html: `<div style="font-family:Arial,sans-serif;padding:20px;max-width:620px">
@@ -193,3 +193,5 @@ function buildEmailHTML(lead, pitchBody) {
 }
 
 module.exports = router;
+
+
