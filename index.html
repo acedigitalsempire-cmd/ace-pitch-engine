@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B2A4A">
+<title>Ace Pitch Engine | Ace Digitals Global</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D1623;--surface:#1B2A4A;--surface-2:#223358;--surface-3:#162038;
+  --border:rgba(255,255,255,0.07);--border-gold:rgba(201,168,76,0.35);
+  --text:#F0F4FF;--text-muted:#8A9BBF;--text-dim:#4A5E82;
+  --gold:#C9A84C;--gold-light:#E8C96C;
+  --red:#E53E3E;--red-soft:rgba(229,62,62,0.12);
+  --green:#38A169;--green-soft:rgba(56,161,105,0.12);
+  --orange:#DD6B20;--accent:#3B6FE8;
+  --radius:6px;--radius-lg:10px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --font-head:'Syne',sans-serif;--font-body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--surface-2);border-radius:4px}
+
+/* TOP BAR */
+.topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px)}
+.topbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head)}
+.brand-dot{width:8px;height:8px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold)}
+.brand-name{font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--text);text-transform:uppercase}
+.brand-tag{font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--border-gold);border-radius:20px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+.status-label{font-size:11px;color:var(--text-muted)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* TABS */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);padding:0 16px}
+.tab-btn{padding:14px 18px;font-size:12px;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* LAYOUT */
+.app{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+
+/* HERO */
+.hero{text-align:center;padding:28px 0 22px}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.hero-title{font-family:var(--font-head);font-size:clamp(22px,5vw,36px);font-weight:800;line-height:1.15;color:var(--text);margin-bottom:8px}
+.hero-title span{color:var(--gold)}
+.hero-sub{font-size:13px;color:var(--text-muted);max-width:440px;margin:0 auto;line-height:1.7}
+
+/* SEARCH CARD */
+.search-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;margin-bottom:22px;box-shadow:var(--shadow)}
+.search-card-title{font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.search-card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.search-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:480px){.search-grid{grid-template-columns:1fr}}
+.field-group{display:flex;flex-direction:column;gap:5px}
+.field-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase}
+.field-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;font-family:var(--font-body);font-size:14px;color:var(--text);transition:border-color .2s,box-shadow .2s;outline:none;-webkit-appearance:none}
+.field-input::placeholder{color:var(--text-dim)}
+.field-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+
+/* QUICK FILL TAGS */
+.search-examples{font-size:11px;color:var(--text-dim);margin-bottom:12px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.search-example-label{color:var(--text-muted)}
+.example-tag{background:var(--surface-3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.example-tag:hover,.example-tag:active{border-color:var(--gold);color:var(--gold)}
+
+/* NICHE GUIDE */
+.niche-guide{background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.niche-guide-title{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.niche-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:400px){.niche-grid{grid-template-columns:1fr}}
+.niche-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;transition:border-color .2s}
+.niche-item:hover{border-color:var(--gold)}
+.niche-priority{font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.niche-service{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.niche-location{font-size:11px;color:var(--text-muted)}
+.niche-why{font-size:10px;color:var(--text-dim);margin-top:4px;line-height:1.4}
+
+.btn-search{width:100%;background:var(--gold);color:#0D1623;border:none;border-radius:var(--radius);padding:13px 24px;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-search:hover:not(:disabled){background:var(--gold-light);transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.3)}
+.btn-search:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* PROGRESS */
+.progress-wrap{display:none;margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px}
+.progress-wrap.visible{display:block}
+.progress-label{font-size:12px;color:var(--text-muted);margin-bottom:10px;display:flex;justify-content:space-between}
+.progress-bar-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;width:0%;transition:width .4s ease;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{filter:brightness(1)}50%{filter:brightness(1.3)}100%{filter:brightness(1)}}
+.progress-step{font-size:11px;color:var(--text-dim);margin-top:8px}
+
+/* STATS */
+.stats-bar{display:none;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stats-bar.visible{display:grid}
+@media(max-width:480px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;text-align:center}
+.stat-value{font-family:var(--font-head);font-size:22px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.stat-value.gold{color:var(--gold)}.stat-value.red{color:var(--red)}.stat-value.green{color:var(--green)}
+.stat-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em}
+
+/* RESULTS HEADER */
+.results-header{display:none;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.results-header.visible{display:flex}
+.results-title{font-family:var(--font-head);font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+.results-title span{color:var(--gold)}
+.sort-wrap{display:flex;gap:6px}
+.sort-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--text-muted);cursor:pointer;transition:all .2s}
+.sort-btn.active,.sort-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.08)}
+
+/* LEAD CARDS */
+.leads-grid{display:flex;flex-direction:column;gap:12px}
+.lead-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color .2s,box-shadow .2s;animation:slideIn .3s ease both}
+.lead-card:hover{border-color:rgba(201,168,76,.25);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.lead-card.sent{border-color:rgba(56,161,105,.3)}
+.lead-card.low-score{opacity:.75}
+.lead-card.expanded .lead-body{display:block}
+.lead-card .lead-body{display:none}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.lead-head{padding:14px 16px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;user-select:none}
+.lead-score-badge{flex-shrink:0;width:50px;height:50px;border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-head)}
+.lead-score-badge .score-num{font-size:19px;font-weight:800;line-height:1}
+.lead-score-badge .score-sub{font-size:8px;opacity:.7;letter-spacing:.05em}
+.score-hot{background:rgba(229,62,62,.15);color:var(--red);border:1px solid rgba(229,62,62,.3)}
+.score-strong{background:rgba(221,107,32,.15);color:var(--orange);border:1px solid rgba(221,107,32,.3)}
+.score-mod{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid var(--border-gold)}
+.score-low{background:var(--surface-3);color:var(--text-muted);border:1px solid var(--border)}
+
+.lead-meta{flex:1;min-width:0}
+.lead-name{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead-location{font-size:12px;color:var(--text-muted);margin-bottom:7px;display:flex;align-items:center;gap:4px}
+.lead-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase}
+.tag-nosite{background:var(--red-soft);color:var(--red);border:1px solid rgba(229,62,62,.2)}
+.tag-email{background:var(--green-soft);color:var(--green);border:1px solid rgba(56,161,105,.2)}
+.tag-rating{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid var(--border-gold)}
+.tag-sent{background:rgba(56,161,105,.15);color:var(--green);border:1px solid rgba(56,161,105,.3)}
+.tag-low{background:rgba(113,128,150,.1);color:var(--text-dim);border:1px solid var(--border)}
+.lead-chevron{flex-shrink:0;width:18px;height:18px;color:var(--text-dim);transition:transform .2s;margin-top:6px}
+.lead-card.expanded .lead-chevron{transform:rotate(180deg)}
+
+.lead-body{border-top:1px solid var(--border);padding:16px}
+.lead-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+@media(max-width:400px){.lead-detail-grid{grid-template-columns:1fr}}
+.detail-item{display:flex;flex-direction:column;gap:3px}
+.detail-label{font-size:10px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em}
+.detail-value{font-size:13px;color:var(--text);word-break:break-all}
+.detail-value.email-val{color:var(--green)}.detail-value.nosite{color:var(--red)}
+
+/* SCORE BREAKDOWN */
+.score-breakdown{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:14px}
+.score-breakdown-title{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.score-item{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.score-item:last-child{margin-bottom:0}
+.score-check{width:15px;height:15px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.score-check.earned{background:var(--green);color:#fff}.score-check.missed{background:var(--surface-3);color:var(--text-dim)}
+.score-item-label{flex:1;font-size:12px;color:var(--text-muted)}
+.score-item-pts{font-size:12px;font-weight:600;color:var(--gold)}
+
+/* PAIN POINTS */
+.pain-list{margin-bottom:14px}
+.pain-list-title{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.pain-item{display:flex;gap:8px;align-items:flex-start;margin-bottom:5px;font-size:12px;color:var(--text-muted)}
+.pain-dot{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
+
+/* PITCH AREA */
+.pitch-area{margin-bottom:12px}
+.pitch-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+.pitch-subject-wrap{margin-bottom:7px}
+.pitch-subject-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--gold);outline:none;transition:border-color .2s}
+.pitch-subject-input:focus{border-color:var(--gold)}
+.pitch-subject-input::placeholder{color:var(--text-dim);font-weight:400}
+.pitch-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:var(--font-body);font-size:13px;color:var(--text);line-height:1.7;resize:vertical;min-height:180px;outline:none;transition:border-color .2s}
+.pitch-textarea:focus{border-color:var(--gold)}
+.pitch-textarea::placeholder{color:var(--text-dim)}
+
+/* BUTTONS */
+.action-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--radius);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;flex-shrink:0}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.btn-primary{background:var(--gold);color:#0D1623}
+.btn-primary:hover:not(:disabled){background:var(--gold-light);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.btn-ghost:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.btn-preview{background:rgba(59,111,232,.15);color:var(--accent);border:1px solid rgba(59,111,232,.3)}
+.btn-preview:hover:not(:disabled){background:rgba(59,111,232,.25)}
+.btn-send{background:var(--green);color:#fff;flex:1;justify-content:center}
+.btn-send:hover:not(:disabled){background:#2F855A;transform:translateY(-1px)}
+
+/* EMPTY + ERROR */
+.empty-state{display:none;text-align:center;padding:44px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius-lg)}
+.empty-state.visible{display:block}
+.empty-icon{font-size:34px;margin-bottom:12px;opacity:.5}
+.empty-title{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--text-muted);margin-bottom:7px}
+.empty-text{font-size:13px;color:var(--text-dim);max-width:320px;margin:0 auto}
+.error-banner{display:none;background:var(--red-soft);border:1px solid rgba(229,62,62,.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--red);line-height:1.5}
+.error-banner.visible{display:block}
+
+/* HISTORY TABLE */
+.history-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.history-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.history-title{font-family:var(--font-head);font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase}
+.history-clear{font-size:11px;color:var(--text-dim);cursor:pointer;padding:4px 10px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text-muted);transition:all .2s}
+.history-clear:hover{border-color:var(--red);color:var(--red)}
+.history-empty{padding:40px;text-align:center;color:var(--text-dim);font-size:13px}
+.history-row{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px}
+.history-row:last-child{border-bottom:none}
+.history-score{flex-shrink:0;width:38px;height:38px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:14px;font-weight:800}
+.history-info{flex:1;min-width:0}
+.history-name{font-weight:600;color:var(--text);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-meta{font-size:11px;color:var(--text-dim);margin-top:3px}
+.history-subject{font-size:11px;color:var(--text-muted);margin-top:4px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-date{font-size:10px;color:var(--text-dim);flex-shrink:0;text-align:right}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 18px;font-size:13px;color:var(--text);box-shadow:var(--shadow);animation:toastIn .3s ease,toastOut .3s ease 2.7s forwards;white-space:nowrap}
+.toast.success{border-color:rgba(56,161,105,.4);color:var(--green)}
+.toast.error{border-color:rgba(229,62,62,.4);color:var(--red)}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+
+/* FOOTER */
+.app-footer{text-align:center;padding-top:28px;font-size:11px;color:var(--text-dim);line-height:1.8}
+.app-footer strong{color:var(--text-muted)}
+
+/* SPINNER */
+.spinner{width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <span class="brand-name">Ace Pitch Engine</span>
+    <span class="brand-tag">ADG</span>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-label" id="statusLabel">Ready</span>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('search')">Search Leads</button>
+  <button class="tab-btn" onclick="switchTab('history')">Pitch History <span id="historyCount" style="color:var(--gold)"></span></button>
+</div>
+
+<main class="app">
+
+  <!-- SEARCH TAB -->
+  <div class="tab-panel active" id="tab-search">
+
+    <section class="hero">
+      <div class="hero-eyebrow">Ace Digitals Global — Lead Intelligence</div>
+      <h1 class="hero-title">Find Local Businesses <span>Without Websites</span></h1>
+      <p class="hero-sub">Target the sweet spot: 10 to 50 reviews, no website, free email. Score, pitch, and send a branded audit PDF in one flow.</p>
+    </section>
+
+    <section class="search-card">
+      <div class="search-card-title">Search for Leads</div>
+
+      <!-- NICHE GUIDE -->
+      <div class="niche-guide">
+        <div class="niche-guide-title">Research-Backed Priority Niches — Tap to fill</div>
+        <div class="niche-grid" id="nicheGrid"></div>
+      </div>
+
+      <!-- MULTI-NICHE TEXTAREA -->
+      <div class="field-group" style="margin-bottom:12px">
+        <label class="field-label" for="nichesInput">Niches — paste all at once, any format</label>
+        <textarea class="field-input" id="nichesInput" rows="6"
+          placeholder="Niche 1 = Hydraulic Hose Repair&#10;Niche 2 = Industrial Welding&#10;Niche 3 = Tank Cleaning&#10;&#10;Or plain list:&#10;Fence Contractor&#10;Parking Lot Striping"
+          style="resize:vertical;line-height:1.8;font-size:13px"
+          oninput="previewNiches()"></textarea>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:5px">
+          Paste numbered (Niche 1 = X) or plain list — both work. All niches run in parallel at once.
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-bottom:12px">
+        <label class="field-label" for="locationInput">Location — applied to every niche above</label>
+        <input class="field-input" id="locationInput" type="text"
+          placeholder="e.g. Texas  or  Houston, Texas  or  Waco, Texas"
+          list="locationOptions" autocomplete="off" oninput="previewNiches()">
+        <datalist id="locationOptions">
+          <option value="Texas"><option value="Waco, Texas"><option value="Tyler, Texas">
+          <option value="Lubbock, Texas"><option value="Beaumont, Texas"><option value="Killeen, Texas">
+          <option value="Midland, Texas"><option value="Georgia"><option value="Macon, Georgia">
+          <option value="Savannah, Georgia"><option value="Tennessee"><option value="Murfreesboro, Tennessee">
+          <option value="Chattanooga, Tennessee"><option value="Florida"><option value="Ocala, Florida">
+          <option value="Fort Myers, Florida">
+        </datalist>
+      </div>
+
+      <!-- PARSED NICHE PREVIEW CHIPS -->
+      <div id="nichePreview" style="display:none;background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px">
+        <div style="font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px">
+          Queued for parallel search
+        </div>
+        <div id="nichePreviewList" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+      </div>
+
+      <button class="btn-search" id="searchBtn" onclick="runSearch()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search All Niches
+    </section>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label">
+        <span id="progressText">Connecting...</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-step" id="progressStep"></div>
+    </div>
+
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Checked</div></div>
+      <div class="stat-card"><div class="stat-value gold" id="statQualified">0</div><div class="stat-label">Qualified</div></div>
+      <div class="stat-card"><div class="stat-value red" id="statSkipped">0</div><div class="stat-label">Skipped</div></div>
+      <div class="stat-card"><div class="stat-value green" id="statSent">0</div><div class="stat-label">Pitched</div></div>
+    </div>
+
+    <div class="results-header" id="resultsHeader">
+      <div class="results-title">Qualified Leads <span id="resultsCount">0</span></div>
+      <div class="sort-wrap">
+        <button class="sort-btn active" onclick="sortLeads('score',event)">Score</button>
+        <button class="sort-btn" onclick="sortLeads('name',event)">A-Z</button>
+      </div>
+    </div>
+
+    <div class="leads-grid" id="leadsGrid"></div>
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">No Qualified Leads Found</div>
+      <p class="empty-text">All businesses either have websites, no email, or too many reviews. Try a secondary city or different service.</p>
+    </div>
+
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="tab-panel" id="tab-history">
+    <div style="padding:20px 0 16px">
+      <div class="results-title" style="display:block;margin-bottom:4px">Pitch History</div>
+      <div style="font-size:12px;color:var(--text-dim)">Every pitch you have sent from this device</div>
+    </div>
+    <div class="history-panel">
+      <div class="history-header">
+        <span class="history-title">Sent Pitches</span>
+        <button class="history-clear" onclick="clearHistory()">Clear All</button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <strong>Ace Digitals Global</strong><br>
+    acedigitalsglobal@gmail.com &nbsp;·&nbsp; acedigitalsempire.com &nbsp;·&nbsp; @DigitalUche<br>
+    WhatsApp: +1 (873) 352-2008
+  </footer>
+
+</main>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let leads      = [];
+let sortMode   = 'score';
+let skippedCount = 0;
+
+// Persistent storage
+const SENT_KEY    = 'ace_sent_ids';
+const HISTORY_KEY = 'ace_pitch_history';
+let sentIds = new Set(JSON.parse(localStorage.getItem(SENT_KEY) || '[]'));
+let pitchHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+// ═══════════════════════════════════════════
+// PRIORITY NICHES (from research)
+// ═══════════════════════════════════════════
+const NICHES = [
+  { priority:'#1 Priority', service:'Fence Contractor',      location:'Waco, Texas',            why:'1,500+ in TX, high ticket, low agency saturation' },
+  { priority:'#2 Priority', service:'Concrete Contractor',   location:'Macon, Georgia',          why:'Owner-ops everywhere, poor digital presence' },
+  { priority:'#3 Priority', service:'Mobile Auto Detailer',  location:'Ocala, Florida',          why:'FB + Maps only, no websites, active market' },
+  { priority:'#4 Priority', service:'Asphalt Sealcoating',   location:'Murfreesboro, Tennessee', why:'Family-owned, referral-only, zero web presence' },
+  { priority:'#5 Priority', service:'Epoxy Flooring Contractor', location:'Fort Myers, Florida', why:'Instagram-only operators, no lead funnel' },
+  { priority:'Underrated',  service:'Parking Lot Striping',  location:'Chattanooga, Tennessee',  why:'No one is pitching them — asymmetric opportunity' },
+];
+
+function buildNicheGrid() {
+  const grid = document.getElementById('nicheGrid');
+  grid.innerHTML = NICHES.map(n => `
+    <div class="niche-item" onclick="quickFill('${n.service}','${n.location}')">
+      <div class="niche-priority">${n.priority}</div>
+      <div class="niche-service">${n.service}</div>
+      <div class="niche-location">${n.location}</div>
+      <div class="niche-why">${n.why}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const qid  = id  => document.getElementById(id);
+const escH = s   => { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function toast(msg, type='default') {
+  const wrap = qid('toastWrap');
+  const el   = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+function setProgress(pct, text, step='') {
+  qid('progressFill').style.width  = pct + '%';
+  qid('progressPct').textContent   = pct + '%';
+  qid('progressText').textContent  = text;
+  qid('progressStep').textContent  = step;
+}
+
+function setStatus(text, active=false) {
+  qid('statusLabel').textContent  = text;
+  qid('statusDot').style.background  = active ? 'var(--gold)' : 'var(--green)';
+  qid('statusDot').style.boxShadow   = active ? '0 0 6px var(--gold)' : '0 0 6px var(--green)';
+}
+
+function showError(msg) {
+  const el = qid('errorBanner');
+  el.innerHTML = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 10000);
+}
+
+// ═══════════════════════════════════════════
+// NICHE PARSING
+// ═══════════════════════════════════════════
+function parseNiches(raw) {
+  if (!raw || !raw.trim()) return [];
+  return raw
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .map(line => {
+      // Handle "Niche 1 = Hydraulic Hose Repair" format
+      const match = line.match(/^niche\s*\d+\s*=\s*(.+)$/i);
+      return match ? match[1].trim() : line;
+    })
+    .filter(s => s.length > 0)
+    .filter((s, i, arr) => arr.indexOf(s) === i); // dedupe
+}
+
+function previewNiches() {
+  const raw      = (qid('nichesInput') ? qid('nichesInput').value : '') || '';
+  const location = (qid('locationInput') ? qid('locationInput').value.trim() : '') || '';
+  const niches   = parseNiches(raw);
+  const preview  = qid('nichePreview');
+  const list     = qid('nichePreviewList');
+  if (!preview || !list) return;
+  if (niches.length === 0) { preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  list.innerHTML = niches.map(n =>
+    `<span style="background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gold)">${escH(n)}${location ? ' · ' + escH(location) : ''}</span>`
+  ).join('');
+}
+
+function quickFill(service, location) {
+  const ta = qid('nichesInput');
+  if (ta) ta.value = service;
+  qid('locationInput').value = location;
+  previewNiches();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['search','history'][i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  qid(`tab-${tab}`).classList.add('active');
+  if (tab === 'history') renderHistory();
+}
+
+// ═══════════════════════════════════════════
+// SEARCH — parallel multi-niche
+// ═══════════════════════════════════════════
+async function runSearch() {
+  const raw      = (qid('nichesInput') ? qid('nichesInput').value : '');
+  const location = qid('locationInput').value.trim();
+  const niches   = parseNiches(raw);
+
+  if (niches.length === 0) { toast('Enter at least one niche / trade.', 'error'); return; }
+  if (!location)           { toast('Enter a location (e.g. Texas).', 'error'); return; }
+
+  qid('leadsGrid').innerHTML = '';
+  qid('emptyState').classList.remove('visible');
+  qid('errorBanner').classList.remove('visible');
+  qid('statsBar').classList.remove('visible');
+  qid('resultsHeader').classList.remove('visible');
+  qid('progressWrap').classList.add('visible');
+  qid('searchBtn').disabled = true;
+  leads = []; skippedCount = 0;
+
+  setStatus('Searching...', true);
+  setProgress(5, `Starting parallel search for ${niches.length} niche${niches.length>1?'s':''}...`,
+    `Running all ${niches.length} searches simultaneously`);
+
+  try {
+    // Run all niche searches in parallel
+    const tasks = niches.map(service =>
+      fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ service, location }),
+      })
+      .then(r => r.json())
+      .then(data => ({ service, data }))
+      .catch(err => ({ service, data: { error: err.message } }))
+    );
+
+    let completed = 0;
+    const updateProgress = () => {
+      completed++;
+      const pct = Math.round(10 + (completed / niches.length) * 80);
+      setProgress(pct,
+        `${completed} of ${niches.length} searches done...`,
+        `Collecting leads from all niches`);
+    };
+
+    // Use Promise.allSettled-style: wrap each task to call updateProgress on completion
+    const wrapped = tasks.map(t => t.then(r => { updateProgress(); return r; }));
+    const results = await Promise.all(wrapped);
+
+    setProgress(95, 'Merging and deduplicating leads...', 'Finalising');
+    await sleep(300);
+
+    const allLeads = [];
+    const seenIds  = new Set();
+    let errors = [];
+
+    for (const { service, data } of results) {
+      if (data.error) {
+        errors.push(`${service}: ${data.error}`);
+        continue;
+      }
+      for (const lead of (data.leads || [])) {
+        const dedup = `${lead.name}|${lead.email}`;
+        if (!seenIds.has(dedup)) {
+          seenIds.add(dedup);
+          allLeads.push({ ...lead, service });
+        }
+      }
+    }
+
+    setProgress(100, 'Done!', `${allLeads.length} qualified lead${allLeads.length!==1?'s':''} found across ${niches.length} niches`);
+    await sleep(500);
+    qid('progressWrap').classList.remove('visible');
+
+    leads = allLeads;
+    skippedCount = 0;
+
+    updateStats(leads);
+    renderLeads(leads);
+    setStatus('Ready');
+
+    if (errors.length > 0) {
+      showError(`Some searches had errors:<br>${errors.map(e => escH(e)).join('<br>')}`);
+    }
+
+    if (allLeads.length === 0) toast('No qualified leads found. Try different niches or location.', 'error');
+
+  } catch (err) {
+    qid('progressWrap').classList.remove('visible');
+    showError(`Search failed: ${err.message}`);
+    setStatus('Error');
+    toast(err.message, 'error');
+  }
+
+  qid('searchBtn').disabled = false;
+}
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+buildNicheGrid();
+updateHistoryBadge();
+</script>
+</body>
+</html>
